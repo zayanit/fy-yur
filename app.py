@@ -25,6 +25,12 @@ db = SQLAlchemy(app)
 # Models.
 #----------------------------------------------------------------------------#
 
+shows = db.Table('shows',
+  db.Column('venue_id', db.Integer, db.ForeignKey('Venue.id'), primary_key=True),
+  db.Column('artist_id', db.Integer, db.ForeignKey('Artist.id'), primary_key=True),
+  db.Column('start_time', db.DateTime)
+)
+
 class Venue(db.Model):
     __tablename__ = 'Venue'
 
@@ -52,8 +58,6 @@ class Artist(db.Model):
     facebook_link = db.Column(db.String(120))
 
     # TODO: implement any missing fields, as a database migration using Flask-Migrate
-
-# TODO Implement Show and Artist models, and complete all model relationships and properties, as a database migration.
 
 #----------------------------------------------------------------------------#
 # Filters.
