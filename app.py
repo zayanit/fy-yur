@@ -317,37 +317,6 @@ def show_artist(artist_id):
   data["past_shows_count"] = len(past_shows)
   return render_template('pages/show_artist.html', artist=data)
 
-#  Update
-#  ----------------------------------------------------------------
-@app.route('/artists/<int:artist_id>/edit', methods=['GET'])
-def edit_artist(artist_id):
-  form = ArtistForm()
-  artist={
-    "id": 4,
-    "name": "Guns N Petals",
-    "genres": ["Rock n Roll"],
-    "city": "San Francisco",
-    "state": "CA",
-    "phone": "326-123-5000",
-    "website": "https://www.gunsnpetalsband.com",
-    "facebook_link": "https://www.facebook.com/GunsNPetals",
-    "seeking_venue": True,
-    "seeking_description": "Looking for shows to perform at in the San Francisco Bay Area!",
-    "image_link": "https://images.unsplash.com/photo-1549213783-8284d0336c4f?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=300&q=80"
-  }
-  # TODO: populate form with fields from artist with ID <artist_id>
-  return render_template('forms/edit_artist.html', form=form, artist=artist)
-
-@app.route('/artists/<int:artist_id>/edit', methods=['POST'])
-def edit_artist_submission(artist_id):
-  # TODO: take values from the form submitted, and update existing
-  # artist record with ID <artist_id> using the new attributes
-
-  return redirect(url_for('show_artist', artist_id=artist_id))
-
-#  Create Artist
-#  ----------------------------------------------------------------
-
 @app.route('/artists/create', methods=['GET'])
 def create_artist_form():
   form = ArtistForm()
@@ -383,6 +352,48 @@ def create_artist_submission():
     
   return render_template('pages/home.html')
 
+@app.route('/artists/<int:artist_id>/edit', methods=['GET'])
+def edit_artist(artist_id):
+  form = ArtistForm()
+  artist = Artist.query.get(artist_id)
+  form.name.data = artist.name
+  form.city.data = artist.city
+  form.state.data = artist.state
+  form.phone.data = artist.phone
+  form.genres.data = artist.genres
+  form.facebook_link.data = artist.facebook_link
+  form.image_link.data = artist.image_link
+  form.website_link.data = artist.website
+  form.seeking_venue.data = 'y' if artist.seeking_venue else ''
+  form.seeking_description.data = artist.seeking_description
+  return render_template('forms/edit_artist.html', form=form, artist=artist)
+
+@app.route('/artists/<int:artist_id>/edit', methods=['POST'])
+def edit_artist_submission(artist_id):
+  try:
+    data = request.form
+    artist = Artist.query.get(artist_id)
+    artist.name = data['name']
+    artist.city = data['city']
+    artist.state = data['state']
+    artist.phone = data.get('phone', '')
+    artist.genres = data.getlist('genres')
+    artist.facebook_link = data.get('facebook_link', '')
+    artist.image_link = data.get('image_link', '')
+    artist.website = data.get('website_link', '')
+    artist.seeking_venue = True if data.get('seeking_venue') == 'y' else False
+    artist.seeking_description = data.get('seeking_description', '')
+    db.session.commit()
+    artist = Artist.query.get(artist_id)
+    flash('Artist ' + artist.name + ' was successfully updated!')
+  except:
+    db.session.rollback()
+    print(sys.exc_info())
+    flash('An error occured. Artist ' + request.form['name'] + ' could not be updated.')
+  finally:
+    db.session.close()
+
+  return redirect(url_for('show_artist', artist_id=artist_id))
 
 #  Shows
 #  ----------------------------------------------------------------
