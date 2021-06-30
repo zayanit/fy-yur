@@ -56,9 +56,9 @@ def upgrade():
     sa.ForeignKeyConstraint(['venue_id'], ['venue.id'], ),
     sa.PrimaryKeyConstraint('id')
     )
-    op.drop_table('Artist')
-    op.drop_table('shows')
-    op.drop_table('Venue')
+    #op.drop_table('Artist')
+    #op.drop_table('shows')
+    #op.drop_table('Venue')
     # ### end Alembic commands ###
 
 
