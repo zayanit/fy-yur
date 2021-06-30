@@ -195,7 +195,6 @@ def create_venue_submission():
     db.session.add(venue)
     db.session.commit()
     venue = Venue.query.filter(Venue.name == data['name']).one()
-    print(venue)
     flash('Venue ' + venue.name + ' was successfully listed!')
   except:
     db.session.rollback()
@@ -338,7 +337,6 @@ def create_artist_submission():
     db.session.add(artist)
     db.session.commit()
     artist = Artist.query.filter(Artist.name == data['name']).one()
-    print(artist)
     flash('Artist ' + artist.name + ' was successfully listed!')
   except:
     db.session.rollback()
@@ -447,7 +445,6 @@ def create_shows():
 def create_show_submission():
   try:
     data = request.form
-    #print(data)
     show = Show(
       artist_id = data['artist_id'],
       venue_id = data['venue_id'],
