@@ -27,11 +27,16 @@ migrate = Migrate(app, db)
 # Models.
 #----------------------------------------------------------------------------#
 
-shows = db.Table('shows',
-  db.Column('venue_id', db.Integer, db.ForeignKey('Venue.id'), primary_key=True),
-  db.Column('artist_id', db.Integer, db.ForeignKey('Artist.id'), primary_key=True),
-  db.Column('start_time', db.DateTime)
-)
+class Show(db.Model):
+  __tablename__ = 'show'
+
+  id = db.Column(db.Integer, primary_key=True)
+  venue_id = db.Column(db.Integer, db.ForeignKey('venue.id'), nullable=False)
+  artist_id = db.Column(db.Integer, db.ForeignKey('artist.id'), nullable=False)
+  start_time = db.Column(db.DateTime, nullable=False)
+
+  def __repr__(self):
+    return f'<Show id: {self.id}, venue_id: {self.venue_id}, artist_id: {self.artist_id}, start_time: {self.start_time}>'
 
 class Venue(db.Model):
     __tablename__ = 'Venue'
@@ -66,8 +71,6 @@ class Artist(db.Model):
     seeking_venue = db.Column(db.Boolean)
     seeking_description = db.Column(db.String())
 
-    # TODO: implement any missing fields, as a database migration using Flask-Migrate
-
 #----------------------------------------------------------------------------#
 # Filters.
 #----------------------------------------------------------------------------#
@@ -98,6 +101,7 @@ def index():
 def venues():
   # TODO: replace with real venues data.
   #       num_shows should be aggregated based on number of upcoming shows per venue.
+  
   data=[{
     "city": "San Francisco",
     "state": "CA",
@@ -119,7 +123,9 @@ def venues():
       "num_upcoming_shows": 0,
     }]
   }]
-  return render_template('pages/venues.html', areas=data);
+  
+  #data = Venue.query.all()
+  return render_template('pages/venues.html', areas=data)
 
 @app.route('/venues/search', methods=['POST'])
 def search_venues():
