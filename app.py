@@ -84,11 +84,10 @@ def search_venues():
 
 @app.route('/venues/<int:venue_id>')
 def show_venue(venue_id):
-  venue = Venue.query.filter(Venue.id == venue_id).one()
-  shows = Show.query.filter(Show.venue_id == venue_id).all()
+  venue = Venue.query.filter(Venue.id == venue_id).join(Show).one()
   upcoming_shows = []
   past_shows = []
-  for show in shows:
+  for show in venue.shows:
     artists = Artist.query.filter(Artist.id == show.artist_id).with_entities(Artist.id, Artist.name, Artist.image_link).all()
     for artist in artists:
       show_details = {
